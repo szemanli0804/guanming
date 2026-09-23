@@ -1,109 +1,79 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const loader = document.querySelector(".site-loader");
-  const header = document.querySelector(".site-header");
-  const menuToggle = document.querySelector(".menu-toggle");
-  const mobileNav = document.querySelector(".mobile-nav");
-  const mobileLinks = document.querySelectorAll(".mobile-nav a");
-  const revealItems = document.querySelectorAll(".reveal");
-  const year = document.getElementById("year");
-  const whatsappButton = document.getElementById("whatsappButton");
+  const config = window.GUANMING_CONFIG || {};
 
-  // ==============================
-  // 1. 基本設定
-  // ==============================
-  // TODO: 把這裡改成你的 WhatsApp 號碼。
-  // 格式：香港 +852，例如 "85291234567"，不要加 +、空格或括號。
-  const WHATSAPP_NUMBER = "852XXXXXXXX";
+  // Google Forms / PayMe links
+  document.querySelectorAll('[data-form-link="formA"]').forEach(el => {
+    if (config.formA && !config.formA.startsWith("REPLACE_")) {
+      el.href = config.formA;
+      el.removeAttribute("data-form-link");
+    } else {
+      el.addEventListener("click", (e) => {
+        e.preventDefault();
+        alert("網站尚未設定 Google Form A。請先在 index.html 的 GUANMING_CONFIG 填入你的 Google Form 網址。");
+      });
+    }
+  });
 
-  const whatsappMessage =
-    "你好，我想了解「觀命」HK$388 專屬命書的預約流程。";
+  document.querySelectorAll('[data-form-link="formB"]').forEach(el => {
+    if (config.formB && !config.formB.startsWith("REPLACE_")) {
+      el.href = config.formB;
+      el.removeAttribute("data-form-link");
+    } else {
+      el.addEventListener("click", (e) => {
+        e.preventDefault();
+        alert("網站尚未設定 Google Form B。請先在 index.html 的 GUANMING_CONFIG 填入你的付款截圖表格網址。");
+      });
+    }
+  });
 
-  if (whatsappButton && !WHATSAPP_NUMBER.includes("X")) {
-    whatsappButton.href =
-      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMessage)}`;
-  } else if (whatsappButton) {
-    whatsappButton.href = "#";
-    whatsappButton.addEventListener("click", (event) => {
-      event.preventDefault();
-      alert("請先在 script.js 填入你的 WhatsApp 號碼。");
+  document.querySelectorAll('[data-payme-link]').forEach(el => {
+    if (config.payme) el.href = config.payme;
+  });
+
+  // Mobile navigation
+  const menuToggle = document.querySelector('.menu-toggle');
+  const mobileNav = document.querySelector('.mobile-nav');
+  if (menuToggle && mobileNav) {
+    menuToggle.addEventListener('click', () => {
+      const open = menuToggle.getAttribute('aria-expanded') === 'true';
+      menuToggle.setAttribute('aria-expanded', String(!open));
+      mobileNav.setAttribute('aria-hidden', String(open));
+      mobileNav.classList.toggle('is-open', !open);
     });
+    mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+      menuToggle.setAttribute('aria-expanded', 'false');
+      mobileNav.setAttribute('aria-hidden', 'true');
+      mobileNav.classList.remove('is-open');
+    }));
   }
 
-  if (year) year.textContent = new Date().getFullYear();
-
-  // ==============================
-  // 2. 頁面載入動畫
-  // ==============================
-  window.addEventListener("load", () => {
-    setTimeout(() => loader?.classList.add("is-hidden"), 450);
-  });
-
-  // ==============================
-  // 3. Header 滾動效果
-  // ==============================
-  const updateHeader = () => {
-    if (window.scrollY > 40) header?.classList.add("scrolled");
-    else header?.classList.remove("scrolled");
-  };
-  updateHeader();
-  window.addEventListener("scroll", updateHeader, { passive: true });
-
-  // ==============================
-  // 4. Mobile menu
-  // ==============================
-  const closeMenu = () => {
-    menuToggle?.setAttribute("aria-expanded", "false");
-    mobileNav?.classList.remove("is-open");
-    mobileNav?.setAttribute("aria-hidden", "true");
-    document.body.classList.remove("menu-open");
-  };
-
-  menuToggle?.addEventListener("click", () => {
-    const isOpen = mobileNav.classList.toggle("is-open");
-    menuToggle.setAttribute("aria-expanded", String(isOpen));
-    mobileNav.setAttribute("aria-hidden", String(!isOpen));
-    document.body.classList.toggle("menu-open", isOpen);
-  });
-
-  mobileLinks.forEach(link => link.addEventListener("click", closeMenu));
-
-  // ==============================
-  // 5. Scroll reveal
-  // ==============================
-  if ("IntersectionObserver" in window) {
-    const observer = new IntersectionObserver((entries, obs) => {
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.classList.add("is-visible");
-          obs.unobserve(entry.target);
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
         }
       });
     }, { threshold: 0.12 });
-
-    revealItems.forEach(item => observer.observe(item));
+    revealEls.forEach(el => observer.observe(el));
   } else {
-    revealItems.forEach(item => item.classList.add("is-visible"));
+    revealEls.forEach(el => el.classList.add('is-visible'));
   }
 
-  // ==============================
-  // 6. FAQ：保持原生 details 行為
-  // ==============================
-  document.querySelectorAll(".faq-list details").forEach(details => {
-    details.addEventListener("toggle", () => {
-      if (details.open) {
-        document.querySelectorAll(".faq-list details").forEach(other => {
-          if (other !== details) other.removeAttribute("open");
-        });
-      }
-    });
-  });
+  // Loader
+  window.setTimeout(() => document.body.classList.add('loaded'), 500);
 
-  // ==============================
-  // 7. 平滑 anchor：手機選單關閉
-  // ==============================
-  document.querySelectorAll('a[href^="#"]').forEach(link => {
-    link.addEventListener("click", () => {
-      if (mobileNav?.classList.contains("is-open")) closeMenu();
+  // FAQ
+  document.querySelectorAll('.faq-item').forEach(item => {
+    const button = item.querySelector('.faq-question');
+    if (!button) return;
+    button.addEventListener('click', () => {
+      const active = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!active) item.classList.add('open');
     });
   });
 });
