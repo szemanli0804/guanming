@@ -336,3 +336,29 @@ button { font: inherit; }
   *, *::before, *::after { animation:none !important; transition:none !important; }
   .reveal { opacity:1; transform:none; }
 }
+
+/* v1.1 cinematic hero */
+.hero-cinematic { position: relative; isolation: isolate; overflow: hidden; }
+.hero-photo {
+  position: absolute; inset: 0 0 0 42%; z-index: -3;
+  background-image: url('hero-cinematic.jpg');
+  background-size: cover; background-position: 62% center;
+  filter: saturate(.82) contrast(1.04);
+}
+.hero-vignette {
+  position: absolute; inset: 0; z-index: -2;
+  background:
+    linear-gradient(90deg, rgba(7,7,7,1) 0%, rgba(7,7,7,.98) 27%, rgba(7,7,7,.72) 45%, rgba(7,7,7,.08) 69%, rgba(7,7,7,.18) 100%),
+    linear-gradient(0deg, rgba(7,7,7,.38), transparent 35%, rgba(7,7,7,.12));
+}
+.hero-cinematic .hero-grid { opacity: .10; }
+.hero-cinematic .hero-orbit { opacity: .16; }
+.brand-mark img { width: 100%; height: 100%; display: block; }
+
+@media (max-width: 900px) {
+  .hero-photo { inset: 38% 0 0 0; background-position: center 55%; }
+  .hero-vignette {
+    background: linear-gradient(180deg, rgba(7,7,7,1) 0%, rgba(7,7,7,.97) 43%, rgba(7,7,7,.22) 73%, rgba(7,7,7,.55) 100%);
+  }
+  .hero-cinematic { min-height: 820px; }
+}

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <title>觀命 Logo</title>
+  <circle cx="60" cy="60" r="48" stroke="currentColor" stroke-width="3"/>
+  <path d="M60 22V98" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  <path d="M48 35C57 40 61 47 61 58C61 71 56 79 47 85" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+  <path d="M72 35C63 40 59 47 59 58C59 71 64 79 73 85" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+</svg>
